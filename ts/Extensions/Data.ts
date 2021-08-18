@@ -48,7 +48,7 @@ const {
  *
  * */
 
-declare module '../Core/Chart/ChartLike'{
+declare module '../Core/Chart/ChartLike' {
     interface ChartLike {
         data?: Highcharts.Data;
         hasDataDef?: boolean;
@@ -67,7 +67,7 @@ declare module '../Core/Options' {
  */
 declare global {
     namespace Highcharts {
-        type DataValueType = (number|string|null);
+        type DataValueType = (number | string | null);
         interface DataAfterCompleteCallbackFunction {
             (dataOptions?: Partial<Options>): void;
         }
@@ -103,6 +103,7 @@ declare global {
             endRow?: number;
             error?: Function;
             firstRowAsNames?: boolean;
+            googleApiKey?: string;
             googleSpreadsheetKey?: string;
             googleSpreadsheetWorksheet?: string;
             itemDelimiter?: string;
@@ -116,13 +117,13 @@ declare global {
             startColumn?: number;
             startRow?: number;
             switchRowsAndColumns?: boolean;
-            table?: (string|HTMLElement);
+            table?: (string | HTMLElement);
         }
         interface DataParseDateCallbackFunction {
             (dateValue: string): number;
         }
         interface DataParsedCallbackFunction {
-            (columns: Array<Array<DataValueType>>): (boolean|undefined);
+            (columns: Array<Array<DataValueType>>): (boolean | undefined);
         }
         interface DataValueCountObject {
             global: number;
@@ -132,7 +133,7 @@ declare global {
             xColumns: Array<number>;
         }
         interface SeriesBuilderReaderObject {
-            columnIndex: (number|undefined);
+            columnIndex: (number | undefined);
             configName: string;
         }
         class Data {
@@ -155,9 +156,9 @@ declare global {
             public valueCount?: DataValueCountObject;
             public complete(): void;
             public dataFound(): void;
-            public fetchLiveData(): (boolean|string);
+            public fetchLiveData(): (boolean | string);
             public getColumnDistribution(): void;
-            public getData(): (Array<Array<DataValueType>>|undefined);
+            public getData(): (Array<Array<DataValueType>> | undefined);
             public getFreeIndexes(
                 numberOfColumns: number,
                 seriesBuilders: Array<SeriesBuilder>
@@ -171,15 +172,15 @@ declare global {
             public parseColumn(column: Array<DataValueType>, col: number): void;
             public parseCSV(
                 inOptions?: Highcharts.DataOptions
-            ): Array<Array<(number|string)>>;
-            public parsed(): (boolean|undefined);
+            ): Array<Array<(number | string)>>;
+            public parsed(): (boolean | undefined);
             public parseDate(val: string): number;
             public parseGoogleSpreadsheet(): boolean;
-            public parseTable(): Array<Array<(number|string)>>;
+            public parseTable(): Array<Array<(number | string)>>;
             public parseTypes(): void;
             public rowsToColumns(
-                rows: (Array<Array<DataValueType>>|undefined)
-            ): (Array<Array<DataValueType>>|undefined);
+                rows: (Array<Array<DataValueType>> | undefined)
+            ): (Array<Array<DataValueType>> | undefined);
             public trim(str: string, inside?: boolean): string;
         }
         class SeriesBuilder {
@@ -187,16 +188,16 @@ declare global {
             public readers: Array<SeriesBuilderReaderObject>;
             public pointIsArray: boolean;
             public addColumnReader(
-                columnIndex: (number|undefined),
+                columnIndex: (number | undefined),
                 configName: string
             ): void;
             public getReferencedColumnIndexes(): Array<number>;
-            public hasReader(configName: string): (boolean|undefined);
+            public hasReader(configName: string): (boolean | undefined);
             public populateColumns(freeIndexes: Array<number>): boolean;
             public read<DataItemType>(
                 columns: Array<Array<DataItemType>>,
                 rowIndex: number
-            ): (Array<DataItemType>|Record<string, DataItemType>);
+            ): (Array<DataItemType> | Record<string, DataItemType>);
         }
         function data(
             dataOptions: DataOptions,
@@ -242,15 +243,15 @@ declare global {
  *
  * @interface Highcharts.DataDateFormatObject
  *//**
- * @name Highcharts.DataDateFormatObject#alternative
- * @type {string|undefined}
- *//**
- * @name Highcharts.DataDateFormatObject#parser
- * @type {Highcharts.DataDateFormatCallbackFunction}
- *//**
- * @name Highcharts.DataDateFormatObject#regex
- * @type {global.RegExp}
- */
+* @name Highcharts.DataDateFormatObject#alternative
+* @type {string|undefined}
+*//**
+* @name Highcharts.DataDateFormatObject#parser
+* @type {Highcharts.DataDateFormatCallbackFunction}
+*//**
+* @name Highcharts.DataDateFormatObject#regex
+* @type {global.RegExp}
+*/
 
 /**
  * Possible types for a data item in a column or row.
@@ -444,6 +445,18 @@ declare global {
  * @since     4.1.0
  * @product   highcharts highstock gantt
  * @apioption data.firstRowAsNames
+ */
+
+/**
+ * The Google Spreadsheet API key required for access generated at [API Services
+ * / Credentials](https://console.cloud.google.com/apis/credentials).
+ *
+ * @sample {highcharts} highcharts/data/google-spreadsheet/
+ *         Load a Google Spreadsheet
+ *
+ * @type      {string}
+ * @since     4.0
+ * @apioption data.googleApiKey
  */
 
 /**
@@ -723,7 +736,7 @@ class Data {
     public firstRowAsNames: boolean = void 0 as any;
     public liveDataTimeout?: number;
     public rawColumns: Array<Array<string>> = void 0 as any;
-    public options: Highcharts.DataOptions= void 0 as any;
+    public options: Highcharts.DataOptions = void 0 as any;
     public valueCount?: Highcharts.DataValueCountObject;
 
     /* *
@@ -847,7 +860,7 @@ class Data {
             },
             getPointArrayMap = function (
                 type: string
-            ): (Array<string>|undefined) {
+            ): (Array<string> | undefined) {
                 return seriesTypes[type || 'line'].prototype.pointArrayMap;
             },
             globalType: string = (
@@ -1164,17 +1177,17 @@ class Data {
                         read(++i);
                     }
 
-                // Perform "plugin" handling
+                    // Perform "plugin" handling
                 } else if (callbacks && callbacks[c]) {
                     if (callbacks[c](c, token)) {
                         push();
                     }
 
-                // Delimiter - push current token
+                    // Delimiter - push current token
                 } else if (c === itemDelimiter) {
                     push();
 
-                // Actual column data
+                    // Actual column data
                 } else {
                     token += c;
                 }
@@ -1198,7 +1211,7 @@ class Data {
             lines.some(function (
                 columnStr: string,
                 i: number
-            ): (boolean|undefined) {
+            ): (boolean | undefined) {
                 let inStr = false,
                     c,
                     cn,
@@ -1640,7 +1653,7 @@ class Data {
              * @private
              */
             function request(
-                url: (string|undefined),
+                url: (string | undefined),
                 done: Function,
                 tp?: string
             ): boolean {
@@ -1675,7 +1688,7 @@ class Data {
                     url: url,
                     dataType: tp || 'json',
                     success: function (
-                        res: (string|Highcharts.JSONType)
+                        res: (string | Highcharts.JSONType)
                     ): void {
                         if (chart && chart.series) {
                             done(res);
@@ -1686,7 +1699,7 @@ class Data {
                     },
                     error: function (
                         xhr: XMLHttpRequest,
-                        text: (string|Error)
+                        text: (string | Error)
                     ): void {
                         if (++currentRetries < maxRetries) {
                             poll();
@@ -1702,7 +1715,7 @@ class Data {
             if (!request(
                 originalOptions.csvURL,
                 function (
-                    res: (string|Highcharts.JSONType)
+                    res: (string | Highcharts.JSONType)
                 ): void {
                     chart.update({
                         data: {
@@ -1713,7 +1726,7 @@ class Data {
                 'text'
             )) {
                 if (!request(originalOptions.rowsURL, function (
-                    res: (string|Highcharts.JSONType)
+                    res: (string | Highcharts.JSONType)
                 ): void {
                     chart.update({
                         data: {
@@ -1722,7 +1735,7 @@ class Data {
                     });
                 })) {
                     request(originalOptions.columnsURL, function (
-                        res: (string|Highcharts.JSONType)
+                        res: (string | Highcharts.JSONType)
                     ): void {
                         chart.update({
                             data: {
@@ -1751,6 +1764,7 @@ class Data {
     public parseGoogleSpreadsheet(): boolean {
         let data = this,
             options = this.options,
+            googleApiKey = options.googleApiKey,
             googleSpreadsheetKey = options.googleSpreadsheetKey,
             chart = this.chart,
             // use sheet 1 as the default rather than od6
@@ -1773,10 +1787,11 @@ class Data {
          */
         function fetchSheet(fn: Function): void {
             const url = [
-                'https://spreadsheets.google.com/feeds/cells',
+                'https://sheets.googleapis.com/v4/spreadsheets',
                 googleSpreadsheetKey,
+                'values',
                 worksheet,
-                'public/values?alt=json'
+                '?alt=json&majorDimension=COLUMNS&key=' + googleApiKey
             ].join('/');
 
             ajax({
@@ -1796,7 +1811,7 @@ class Data {
                 },
                 error: function (
                     xhr: XMLHttpRequest,
-                    text: (string|Error)
+                    text: (string | Error)
                 ): void {
                     return options.error && options.error(text, xhr);
                 }
@@ -1809,17 +1824,15 @@ class Data {
 
             fetchSheet(function (
                 json: Highcharts.JSONType
-            ): (boolean|undefined) {
+            ): (boolean | undefined) {
                 // Prepare the data from the spreadsheat
                 let columns: Array<Array<Highcharts.DataValueType>> = [],
-                    cells = json.feed.entry,
+                    cells = json.values,
                     cell,
                     cellCount = (cells || []).length,
                     colCount = 0,
                     rowCount = 0,
                     val,
-                    gr,
-                    gc,
                     cellInner,
                     i: number;
 
@@ -1827,57 +1840,15 @@ class Data {
                     return false;
                 }
 
-                // First, find the total number of columns and rows that
-                // are actually filled with data
-                for (i = 0; i < cellCount; i++) {
-                    cell = cells[i];
-                    colCount = Math.max(colCount, cell.gs$cell.col);
-                    rowCount = Math.max(rowCount, cell.gs$cell.row);
-                }
+                // TODO: The prior Google Sheets API v3 version had a mechanism
+                // to allow for sparsely filled arrays and starting row/col
 
-                // Set up arrays containing the column data
-                for (i = 0; i < colCount; i++) {
-                    if (i >= startColumn && i <= endColumn) {
-                        // Create new columns with the length of either
-                        // end-start or rowCount
-                        columns[i - startColumn] = [];
-                    }
-                }
+                // TODO: the Google sheets API v3 had a mechanism to parse
+                // numeric and date values; maintainers to determine if this
+                // is still required
 
-                // Loop over the cells and assign the value to the right
-                // place in the column arrays
-                for (i = 0; i < cellCount; i++) {
-                    cell = cells[i];
-                    gr = cell.gs$cell.row - 1; // rows start at 1
-                    gc = cell.gs$cell.col - 1; // columns start at 1
-
-                    // If both row and col falls inside start and end set the
-                    // transposed cell value in the newly created columns
-                    if (gc >= startColumn && gc <= endColumn &&
-                        gr >= startRow && gr <= endRow) {
-
-                        cellInner = cell.gs$cell || cell.content;
-
-                        val = null;
-
-                        if (cellInner.numericValue) {
-                            if (cellInner.$t.indexOf('/') >= 0 ||
-                                cellInner.$t.indexOf('-') >= 0) {
-                                // This is a date - for future reference.
-                                val = cellInner.$t;
-                            } else if (cellInner.$t.indexOf('%') > 0) {
-                                // Percentage
-                                val = parseFloat(cellInner.numericValue) * 100;
-                            } else {
-                                val = parseFloat(cellInner.numericValue);
-                            }
-                        } else if (cellInner.$t && cellInner.$t.length) {
-                            val = cellInner.$t;
-                        }
-
-                        columns[gc - startColumn][gr - startRow] = val;
-                    }
-                }
+                // as of GS API v4 we request the data in columns
+                columns = cells
 
                 // Insert null for empty spreadsheet cells (#5298)
                 columns.forEach(function (
@@ -2031,8 +2002,8 @@ class Data {
                     descending = floatVal > (column[row + 1] as any);
                 }
 
-            // String, continue to determine if it is a date string or really a
-            // string
+                // String, continue to determine if it is a date string or really a
+                // string
             } else {
                 if (trimVal && trimVal.length) {
                     dateVal = this.parseDate(val as any);
@@ -2112,7 +2083,7 @@ class Data {
     public dateFormats: Record<string, Highcharts.DataDateFormatObject> = {
         'YYYY/mm/dd': {
             regex: /^([0-9]{4})[\-\/\.]([0-9]{1,2})[\-\/\.]([0-9]{1,2})$/,
-            parser: function (match: (RegExpMatchArray|null)): number {
+            parser: function (match: (RegExpMatchArray | null)): number {
                 return (
                     match ?
                         Date.UTC(+match[1], (match[2] as any) - 1, +match[3]) :
@@ -2122,7 +2093,7 @@ class Data {
         },
         'dd/mm/YYYY': {
             regex: /^([0-9]{1,2})[\-\/\.]([0-9]{1,2})[\-\/\.]([0-9]{4})$/,
-            parser: function (match: (RegExpMatchArray|null)): number {
+            parser: function (match: (RegExpMatchArray | null)): number {
                 return (
                     match ?
                         Date.UTC(+match[3], (match[2] as any) - 1, +match[1]) :
@@ -2133,7 +2104,7 @@ class Data {
         },
         'mm/dd/YYYY': {
             regex: /^([0-9]{1,2})[\-\/\.]([0-9]{1,2})[\-\/\.]([0-9]{4})$/,
-            parser: function (match: (RegExpMatchArray|null)): number {
+            parser: function (match: (RegExpMatchArray | null)): number {
                 return (
                     match ?
                         Date.UTC(+match[3], (match[1] as any) - 1, +match[2]) :
@@ -2143,7 +2114,7 @@ class Data {
         },
         'dd/mm/YY': {
             regex: /^([0-9]{1,2})[\-\/\.]([0-9]{1,2})[\-\/\.]([0-9]{2})$/,
-            parser: function (match: (RegExpMatchArray|null)): number {
+            parser: function (match: (RegExpMatchArray | null)): number {
                 if (!match) {
                     return NaN;
                 }
@@ -2162,7 +2133,7 @@ class Data {
         },
         'mm/dd/YY': {
             regex: /^([0-9]{1,2})[\-\/\.]([0-9]{1,2})[\-\/\.]([0-9]{2})$/,
-            parser: function (match: (RegExpMatchArray|null)): number {
+            parser: function (match: (RegExpMatchArray | null)): number {
                 return (
                     match ?
                         Date.UTC(+match[3] + 2000, (match[1] as any) - 1, +match[2]) :
@@ -2207,7 +2178,7 @@ class Data {
                         break;
                     }
                 }
-            // Next time, use the one previously found
+                // Next time, use the one previously found
             } else {
                 format = this.dateFormats[dateFormat];
 
@@ -2245,7 +2216,7 @@ class Data {
                         60000
                     );
 
-                // Timestamp
+                    // Timestamp
                 } else if (isNumber(match)) {
                     ret = match - (new Date(match)).getTimezoneOffset() * 60000;
                 }
@@ -2263,13 +2234,13 @@ class Data {
      *
      * @return {Array<Array<Highcharts.DataValueType>>|undefined}
      */
-    public rowsToColumns(rows: (Array<Array<Highcharts.DataValueType>>|undefined)
-    ): (Array<Array<Highcharts.DataValueType>>|undefined) {
+    public rowsToColumns(rows: (Array<Array<Highcharts.DataValueType>> | undefined)
+    ): (Array<Array<Highcharts.DataValueType>> | undefined) {
         let row,
             rowsLength,
             col,
             colsLength,
-            columns: (Array<Array<Highcharts.DataValueType>>|undefined);
+            columns: (Array<Array<Highcharts.DataValueType>> | undefined);
 
         if (rows) {
             columns = [];
@@ -2301,7 +2272,7 @@ class Data {
      *
      * @return {Array<Array<(number|string)>>|undefined} Data rows
      */
-    public getData(): (Array<Array<(number|string)>>|undefined) {
+    public getData(): (Array<Array<(number | string)>> | undefined) {
         if (this.columns) {
             return (this.rowsToColumns(this.columns) as any).slice(1);
         }
@@ -2314,7 +2285,7 @@ class Data {
      *
      * @return {boolean|undefined}
      */
-    public parsed(): (boolean|undefined) {
+    public parsed(): (boolean | undefined) {
         if (this.options.parsed) {
             return this.options.parsed.call(this, this.columns as any);
         }
@@ -2605,8 +2576,8 @@ addEvent(
     function (
         e: Event & {
             args: [
-                (Partial<Options>|undefined),
-                (Chart.CallbackFunction|undefined)
+                (Partial<Options> | undefined),
+                (Chart.CallbackFunction | undefined)
             ];
         }
     ): void {
@@ -2744,10 +2715,10 @@ class SeriesBuilder {
      *
      * @returns {Array<T>|Highcharts.Dictionary<T>}
      */
-    public read <T>(
+    public read<T>(
         columns: Array<Array<T>>,
         rowIndex: number
-    ): (Array<T>|Record<string, T>) {
+    ): (Array<T> | Record<string, T>) {
         let builder = this,
             pointIsArray = builder.pointIsArray,
             point =
@@ -2807,7 +2778,7 @@ class SeriesBuilder {
      * @param {string} configName
      */
     public addColumnReader(
-        columnIndex: (number|undefined),
+        columnIndex: (number | undefined),
         configName: string
     ): void {
         this.readers.push({
@@ -2856,7 +2827,7 @@ class SeriesBuilder {
      *
      * @returns {boolean|undefined}
      */
-    public hasReader(configName: string): (boolean|undefined) {
+    public hasReader(configName: string): (boolean | undefined) {
         let i, columnReader;
 
         for (i = 0; i < this.readers.length; i = i + 1) {
